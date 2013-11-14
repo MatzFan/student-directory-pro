@@ -84,6 +84,15 @@ class StudentDirectory
     File.open(file, "w") { |f| @students.each {|s| f.puts s.values.join(',')} }
   end
 
+  def load_students(file_arg)
+    file = File.open(file_arg, "r")
+    file.readlines.each do |line|
+      cohort, name, hobby, country = line.chomp.split(',')
+      @students << {name: name, cohort: cohort.to_sym}
+    end
+     file.close
+  end
+
   private
   def print_header
     puts HEADER
@@ -118,7 +127,7 @@ class StudentDirectory
     if attribute == :cohort
       loop do
         if MONTHS.include? user_input # check it is a valid month
-          return user_input.to_sym
+          return user_input.to_sym # store cohort as a symbol
         end
         puts "Sorry, please enter a valid month"
         user_input = gets.chomp
@@ -136,6 +145,8 @@ class StudentDirectory
       show_students
     when "3"
       save_students("students.csv")
+    when "4"
+      load_students("students.csv")
     when "9"
       exit
     else
@@ -147,7 +158,8 @@ class StudentDirectory
   def print_menu
     puts "1. Input the students"
     puts "2. Show the students"
-    puts "3. Save students to csv"
+    puts "3. Save students to file"
+    puts "4. Load the list from file"
     puts "9. Exit"
   end
 

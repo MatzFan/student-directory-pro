@@ -80,10 +80,8 @@ class StudentDirectory
     end
   end
 
-  def save_students
-    file = File.open("students.csv", "w") # w option require to open in read mode (from IO.new)
-    @students.each { |student| file.puts student.values.join(',') }
-    file.close
+  def save_students(file)
+    File.open(file, "w") { |f| @students.each {|s| f.puts s.values.join(',')} }
   end
 
   private
@@ -137,7 +135,7 @@ class StudentDirectory
     when "2"
       show_students
     when "3"
-      save_students
+      save_students("students.csv")
     when "9"
       exit
     else

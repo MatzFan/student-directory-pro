@@ -1,4 +1,5 @@
 require 'pry'
+require 'csv'
 
 =begin
 students = [
@@ -57,12 +58,6 @@ class StudentDirectory
     end
   end
 
-  def print_header
-    puts HEADER
-    HEADER.size.times { print '-' }
-    puts
-  end
-
   def print_students_list
   	@students.each_with_index do |s, index|
       # cycle through each attribute hash & print value for each
@@ -85,6 +80,20 @@ class StudentDirectory
     end
   end
 
+  def save_students
+    file = File.open("students.csv", "w") # w option require to open in read mode (from IO.new)
+    @students.each { |student| file.puts student.values.join(',') }
+    file.close
+  end
+
+  private
+  def print_header
+    puts HEADER
+    HEADER.size.times { print '-' }
+    puts
+  end
+
+  private
   def print_footer
     print "Overall we have #{@students.size} great students.\n"
   end
@@ -127,6 +136,8 @@ class StudentDirectory
       input_students
     when "2"
       show_students
+    when "3"
+      save_students
     when "9"
       exit
     else
@@ -138,6 +149,7 @@ class StudentDirectory
   def print_menu
     puts "1. Input the students"
     puts "2. Show the students"
+    puts "3. Save students to csv"
     puts "9. Exit"
   end
 
@@ -152,3 +164,4 @@ end # of class
 
 dir = StudentDirectory.new
 dir.interactive_menu
+

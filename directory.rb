@@ -80,7 +80,7 @@ class StudentDirectory
     end
   end
 
-  def save_students(file)
+  def save_students(file) # WHY WRITE DATA A LINE AT A TIME?
     File.open(file, "w") { |f| @students.each {|s| f.puts s.values.join(',')} }
   end
 

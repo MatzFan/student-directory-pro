@@ -38,22 +38,8 @@ class StudentDirectory
 
   def interactive_menu
     loop do
-      puts "1. Input the students"
-      puts "2. Show the students"
-      puts "9. Exit"
-      selection = gets.chomp
-      case selection
-      when "1"
-        input_students
-      when "2"
-        print_header
-        print_students
-        print_footer
-      when "9"
-        exit
-      else
-        puts "Sorry, I don't recognise that command, try again"
-      end
+      print_menu
+      process(gets.chomp)
     end
   end
 
@@ -133,12 +119,35 @@ class StudentDirectory
     user_input
   end
 
-end
+  private
+  def process(selection)
+    case selection
+    when "1"
+      input_students
+    when "2"
+      show_students
+    when "9"
+      exit
+    else
+      puts "Sorry, I don't recognise that command, try again"
+    end
+  end
+
+  private
+  def print_menu
+    puts "1. Input the students"
+    puts "2. Show the students"
+    puts "9. Exit"
+  end
+
+  private
+  def show_students
+    print_header
+    print_students
+    print_footer
+  end
+
+end # of class
 
 dir = StudentDirectory.new
 dir.interactive_menu
-# dir.input_students
-# dir.print_header
-# dir.print_students_by_cohort('November')
-# dir.print_footer
-

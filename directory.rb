@@ -29,7 +29,9 @@ class StudentDirectory
 
   MONTHS = Date::MONTHNAMES
   HEADER = "The students of my cohort at Makers Academy"
-  STUDENT_ATTRIBUTES = {cohort: MONTHS[11], name: 'Unknown', hobby: 'None', country: nil}
+  # Hash specifies order each student's data is read from and written to file and printed
+  ATTRIBUTE_DEFAULTS = {cohort: MONTHS[11], name: 'Unknown', country: 'Unknown', hobby: 'None'}
+  ORDER = [:cohort, :name, :country, :hobby]
 
   attr_accessor :students
 
@@ -60,35 +62,41 @@ class StudentDirectory
 
   def print_students_list
   	@students.each_with_index do |s, index|
-      # cycle through each attribute hash & print value for each
       msg = ""
-      STUDENT_ATTRIBUTES.map { |k,v| msg += "#{s[k]} " }
+      s.each { |k,v| msg += "#{s[k]} " } # loops each student attribute
   	  puts "#{index+1}. #{msg}".center(HEADER.length)
   	end
   end
 
-  def print_students_by_cohort(cohort)
-    relevant_students = @students.select {|s| s[:cohort] == cohort}
-    relevant_students.each_with_index do |s, index|
-      puts "#{s[:cohort]} Cohort"
-      puts
-      msg = ""
-      STUDENT_ATTRIBUTES.map do |k,v|
-        msg += "#{s[k]} " unless k == :cohort # excludes group attribute
-      end
-      puts "#{index+1}. #{msg}".center(HEADER.length)
-    end
-  end
+  # def print_students_by_cohort(cohort)
+  #   relevant_students = @students.select {|s| s[:cohort] == cohort}
+  #   relevant_students.each_with_index do |s, index|
+  #     puts "#{s[:cohort]} Cohort"
+  #     puts
+  #     msg = ""
+  #     ATTRIBUTE_DEFAULTS.each do |k,v|
+  #       msg += "#{s[k]} " unless k == :cohort # excludes group attribute
+  #     end
+  #     puts "#{index+1}. #{msg}".center(HEADER.length)
+  #   end
+  # end
 
   def save_students(file) # WHY WRITE DATA A LINE AT A TIME?
-    File.open(file, "w") { |f| @students.each {|s| f.puts s.values.join(',')} }
+    File.open(file, "w") do |f|
+      @students.each do |student|
+        f.puts student.values.join(',') # IS THIS VERY DANGEROUS?
+      end
+    end
   end
 
   def load_students(file_arg)
     file = File.open(file_arg, "r")
     file.readlines.each do |line|
-      cohort, name, hobby, country = line.chomp.split(',')
-      @students << {name: name, cohort: cohort.to_sym}
+      # cohort, name, hobby, country = line.chomp.split(',')
+      student = {}
+      values = line.chomp.split(',')
+      values.each_with_index { |v, i| student[ORDER[i]] = v } # v is value for each student attribute
+      @students << student #{name: name, cohort: cohort.to_sym}
     end
      file.close
   end
@@ -108,7 +116,7 @@ class StudentDirectory
   private
   def input_student_attributes
     student = {}
-    STUDENT_ATTRIBUTES.each do |attribute, default| # elements are hashes
+    ATTRIBUTE_DEFAULTS.each do |attribute, default| # elements are hashes
       puts "Enter #{attribute.capitalize}, just hit enter for default value: #{default}"
       input_value = gets.chomp
       if !input_value.empty?

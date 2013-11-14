@@ -36,6 +36,27 @@ class StudentDirectory
     @students = []
   end
 
+  def interactive_menu
+    loop do
+      puts "1. Input the students"
+      puts "2. Show the students"
+      puts "9. Exit"
+      selection = gets.chomp
+      case selection
+      when "1"
+        input_students
+      when "2"
+        print_header
+        print_students
+        print_footer
+      when "9"
+        exit
+      else
+        puts "Sorry, I don't recognise that command, try again"
+      end
+    end
+  end
+
   def input_students
   	puts "Please enter the details for each student\nTo finish just hit return twice"
   	loop do
@@ -56,8 +77,8 @@ class StudentDirectory
     puts
   end
 
-  def print_students(students)
-  	students.each_with_index do |s, index|
+  def print_students
+  	@students.each_with_index do |s, index|
       # cycle through each attribute hash & print value for each
       msg = ""
       STUDENT_ATTRIBUTES.map { |k,v| msg += "#{s[k]} " }
@@ -115,7 +136,9 @@ class StudentDirectory
 end
 
 dir = StudentDirectory.new
-dir.input_students
-dir.print_header
-dir.print_students_by_cohort('November')
-dir.print_footer
+dir.interactive_menu
+# dir.input_students
+# dir.print_header
+# dir.print_students_by_cohort('November')
+# dir.print_footer
+

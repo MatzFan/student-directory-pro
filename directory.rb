@@ -52,7 +52,7 @@ class StudentDirectory
         another = gets.strip
         break if another =~/[Nn]/
       end
-      @students << input_student_attributes
+      @students << input_student_attributes # appends a new student to the array
       puts "Now we have #{students.size} student" + (@students.size > 1 ? "s" : "")
     end
   end
@@ -63,7 +63,7 @@ class StudentDirectory
     puts
   end
 
-  def print_students
+  def print_students_list
   	@students.each_with_index do |s, index|
       # cycle through each attribute hash & print value for each
       msg = ""
@@ -102,6 +102,7 @@ class StudentDirectory
         student[attribute] = default # if empty string use the default
       end
     end
+    student
   end
 
   # Validates user input
@@ -143,7 +144,7 @@ class StudentDirectory
   private
   def show_students
     print_header
-    print_students
+    print_students_list
     print_footer
   end
 

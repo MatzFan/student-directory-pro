@@ -31,8 +31,8 @@ students = [
 class StudentDirectory
 
   # Hash specifies order each student's data is read from and written to file and printed
-  ATTRIBUTE_DEFAULTS = {cohort: MONTHS[11], name: 'Unknown', hobby: 'None', country: 'Unknown'}
   MONTHS = Date::MONTHNAMES
+  ATTRIBUTE_DEFAULTS = {cohort: MONTHS[11], name: 'Unknown', hobby: 'None', country: 'Unknown'}
   HEADER = "The students of my cohort at Makers Academy"
 
   attr_accessor :students
@@ -67,12 +67,14 @@ class StudentDirectory
   def print_students_list
   	@students.each_with_index do |s, index|
       string = ""
-      string = s.map { |k,v| string += "#{s[k]} " } # loops each student attribute
+      s.map do |k,v|
+      string << "#{s[k]} " # loops each student attribute
+      end
   	  puts "#{index+1}. #{string}".center(HEADER.length)
   	end
   end
 
-  # def print_students_by_cohort(cohort)
+  def print_students_by_cohort(cohort)
   #   relevant_students = @students.select {|s| s[:cohort] == cohort}
   #   relevant_students.each_with_index do |s, index|
   #     puts "#{s[:cohort]} Cohort"
@@ -83,7 +85,7 @@ class StudentDirectory
   #     end
   #     puts "#{index+1}. #{msg}".center(HEADER.length)
   #   end
-  # end
+  end
 
   def save_students # WHY WRITE DATA A LINE AT A TIME?
     File.open(@output_file, "w") do |f|
@@ -106,15 +108,15 @@ class StudentDirectory
 
   #
   def load_students(file_arg)
-    file = File.open(file_arg, "r")
-    file.readlines.each do |line|
-      values = line.chomp.split(',')
-      student = {}
-      # build set of student key/value pairs
-      values.each_with_index { |v, i| student[ATTRIBUTE_DEFAULTS.keys[i]] = v }
-      @students << student
+    File.open(file_arg, "r") do |file|
+      file.readlines.each do |line|
+        values = line.chomp.split(',')
+        student = {}
+        # build set of student key/value pairs
+        values.each_with_index { |v, i| student[ATTRIBUTE_DEFAULTS.keys[i]] = v }
+        @students << student
+      end
     end
-     file.close
   end
 
   private

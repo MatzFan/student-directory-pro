@@ -40,9 +40,13 @@ class StudentDirectory
 
   def initialize
     @students = []
+    # set default output file, if one not provided
+    @output_file = ARGV[1]
+    @output_file ||= 'students.csv'
   end
 
   def interactive_menu
+    puts @output_file
     loop do
       print_menu
       process(gets.chomp)
@@ -84,14 +88,26 @@ class StudentDirectory
   #   end
   # end
 
-  def save_students(file) # WHY WRITE DATA A LINE AT A TIME?
-    File.open(file, "w") do |f|
+  def save_students # WHY WRITE DATA A LINE AT A TIME?
+    File.open(@output_file, "w") do |f|
       @students.each do |student|
         f.puts student.values.join(',') # IS THIS VERY DANGEROUS?
       end
     end
   end
 
+  def try_load_students
+    return if @output_file.nil?
+    if File.exists?(@output_file) # coerces strig to File
+      load_students(@output_file)
+      puts "Loaded #{@students.length} from #{@output_file}."
+    else
+      puts "Sorry, #{@output_file} doesn't exist."
+      exit
+    end
+  end
+
+  #
   def load_students(file_arg)
     file = File.open(file_arg, "r")
     file.readlines.each do |line|
@@ -157,9 +173,9 @@ class StudentDirectory
     when "2"
       show_students
     when "3"
-      save_students("students.csv")
+      save_students
     when "4"
-      load_students("students.csv")
+      try_load_students # uses first CL arg as filename, or default
     when "9"
       exit
     else

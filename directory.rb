@@ -40,8 +40,9 @@ class StudentDirectory
   def initialize
     @students = []
     # set default output file, if one not provided
-    @output_file = ARGV[0]
+    @output_file, @output_filepath = ARGV[0]
     @output_file ||= 'students.csv'
+    @output_filepath ||= './students.csv'
   end
 
   def interactive_menu
@@ -88,34 +89,31 @@ class StudentDirectory
   end
 
   def save_students # WHY WRITE DATA A LINE AT A TIME?
-    File.open(@output_file, "w") do |f|
+    CSV.open(@output_file, "w") do |csv|
       @students.each do |student|
-        f.puts student.values.join(',') # IS THIS VERY DANGEROUS?
+        csv << student.values # the array
       end
     end
   end
 
   def try_load_students
-    return if @output_file.nil?
-    if File.exists?(@output_file) # coerces strig to File
-      load_students(@output_file)
+    return if @output_filepath.nil?
+    if File.exists?(@output_file) # coerces string to File
+      load_students(@output_filepath) # note path required
       puts "Loaded #{@students.length} from #{@output_file}."
     else
-      puts "Sorry, #{@output_file} doesn't exist."
+      puts "Sorry, #{@output_filepath} doesn't exist."
       exit
     end
   end
 
   #
-  def load_students(file_arg)
-    File.open(file_arg, "r") do |file|
-      file.readlines.each do |line|
-        values = line.chomp.split(',')
-        student = {}
-        # build set of student key/value pairs
-        values.each_with_index { |v, i| student[ATTRIBUTE_DEFAULTS.keys[i]] = v }
-        @students << student
-      end
+  def load_students(file)
+    CSV.foreach(file, "r") do |row|
+      student = {}
+      # build set of student key/value pairs
+      row.each_with_index { |v, i| student[ATTRIBUTE_DEFAULTS.keys[i]] = v }
+      @students << student
     end
   end
 

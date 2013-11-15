@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require 'pry'
 require 'csv'
 
@@ -23,6 +25,7 @@ students = [
   {name: 'Jean-Baptiste..', cohort: :november}
   {name: 'Ken..', cohort: :november}
   {name: 'Erica..', cohort: :november}
+  {name: 'Nikki..', cohort: :november}
 ]
 =end
 class StudentDirectory
@@ -30,8 +33,8 @@ class StudentDirectory
   MONTHS = Date::MONTHNAMES
   HEADER = "The students of my cohort at Makers Academy"
   # Hash specifies order each student's data is read from and written to file and printed
-  ATTRIBUTE_DEFAULTS = {cohort: MONTHS[11], name: 'Unknown', country: 'Unknown', hobby: 'None'}
-  ORDER = [:cohort, :name, :country, :hobby]
+  ATTRIBUTE_DEFAULTS = {cohort: MONTHS[11], name: 'Unknown', hobby: 'None', country: 'Unknown'}
+  ORDER = [:cohort, :name, :hobby, :country]
 
   attr_accessor :students
 
@@ -95,8 +98,10 @@ class StudentDirectory
       # cohort, name, hobby, country = line.chomp.split(',')
       student = {}
       values = line.chomp.split(',')
-      values.each_with_index { |v, i| student[ORDER[i]] = v } # v is value for each student attribute
-      @students << student #{name: name, cohort: cohort.to_sym}
+      values.each_with_index do |v, i|
+       student[ATTRIBUTE_DEFAULTS.keys[i]] = v # external iterator over enum.
+      end
+      @students << student
     end
      file.close
   end

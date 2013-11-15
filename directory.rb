@@ -11,7 +11,7 @@ students = [
   {name: 'Hannah..', cohort: :november},
   {name: 'Lara Young', cohort: :november},
   {name: 'Jeremy Marer', cohort: :november},
-  {name: 'Kennedy..', cohort: :november},
+  {name: 'Kennedeigh..', cohort: :november},
   {name: 'Simon Woolf', cohort: :november},
   {name: 'Tom..', cohort: :november},
   {name: 'Tom..', cohort: :november},
@@ -30,33 +30,30 @@ students = [
 =end
 class StudentDirectory
 
-  MONTHS = Date::MONTHNAMES
-  HEADER = "The students of my cohort at Makers Academy"
   # Hash specifies order each student's data is read from and written to file and printed
   ATTRIBUTE_DEFAULTS = {cohort: MONTHS[11], name: 'Unknown', hobby: 'None', country: 'Unknown'}
-  ORDER = [:cohort, :name, :hobby, :country]
+  MONTHS = Date::MONTHNAMES
+  HEADER = "The students of my cohort at Makers Academy"
 
   attr_accessor :students
 
   def initialize
     @students = []
     # set default output file, if one not provided
-    @output_file = ARGV[1]
+    @output_file = ARGV[0]
     @output_file ||= 'students.csv'
   end
 
   def interactive_menu
-    puts @output_file
     loop do
       print_menu
-      process(gets.chomp)
+      process(STDIN.gets.chomp)
     end
   end
 
   def input_students
   	puts "Please enter the details for each student\nTo finish just hit return twice"
   	loop do
-      puts @students.length
       if !(@students.length == 0) # assumes user wants to enter at least one student
         puts 'Another?'
         another = gets.strip
@@ -69,9 +66,9 @@ class StudentDirectory
 
   def print_students_list
   	@students.each_with_index do |s, index|
-      msg = ""
-      s.each { |k,v| msg += "#{s[k]} " } # loops each student attribute
-  	  puts "#{index+1}. #{msg}".center(HEADER.length)
+      string = ""
+      string = s.map { |k,v| string += "#{s[k]} " } # loops each student attribute
+  	  puts "#{index+1}. #{string}".center(HEADER.length)
   	end
   end
 
@@ -111,12 +108,10 @@ class StudentDirectory
   def load_students(file_arg)
     file = File.open(file_arg, "r")
     file.readlines.each do |line|
-      # cohort, name, hobby, country = line.chomp.split(',')
-      student = {}
       values = line.chomp.split(',')
-      values.each_with_index do |v, i|
-       student[ATTRIBUTE_DEFAULTS.keys[i]] = v # external iterator over enum.
-      end
+      student = {}
+      # build set of student key/value pairs
+      values.each_with_index { |v, i| student[ATTRIBUTE_DEFAULTS.keys[i]] = v }
       @students << student
     end
      file.close
@@ -139,7 +134,7 @@ class StudentDirectory
     student = {}
     ATTRIBUTE_DEFAULTS.each do |attribute, default| # elements are hashes
       puts "Enter #{attribute.capitalize}, just hit enter for default value: #{default}"
-      input_value = gets.chomp
+      input_value = STDIN.gets.chomp
       if !input_value.empty?
         # first validate the input
         student[attribute] = check_input(attribute, input_value)
@@ -154,13 +149,9 @@ class StudentDirectory
   private
   def check_input(attribute, user_input)
     if attribute == :cohort
-      loop do
-        if MONTHS.include? user_input # check it is a valid month
-          return user_input.to_sym # store cohort as a symbol
-        end
-        puts "Sorry, please enter a valid month"
-        user_input = gets.chomp
-      end
+      return user_input.to_sym if MONTHS.include? user_input # store cohort as a symbol
+      puts "Sorry, please enter a valid month"
+      user_input = gets.chomp
     end
     user_input
   end

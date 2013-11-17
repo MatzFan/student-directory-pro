@@ -109,7 +109,7 @@ class StudentDirectory
 
   #
   def load_students(file)
-    CSV.foreach(file, "r") do |row|
+    CSV.foreach(file) do |row| # foreach args needn't include "r" flag to read
       student = {}
       # build set of student key/value pairs
       row.each_with_index { |v, i| student[ATTRIBUTE_DEFAULTS.keys[i]] = v }
